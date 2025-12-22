@@ -241,9 +241,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - The Python scientific computing community
 
 ---
-
-**⭐ Star this repository if you find it helpful!**
-
-*Generated with ❤️ for the research community*
-#   G r a b P u m b e d  
+ 
  
