@@ -153,6 +153,11 @@ def generate_reading_list(input_path_or_df, output_html_path, search_info=None):
         # 添加状态指示器容器
         sidebar_links_html += f'            <li><a href="#article-{idx}" data-article-id="{idx}"><span class="bookmark-indicators" id="indicators-{idx}"></span>{html.escape(bookmark_text)}</a></li>\n'
 
+    # Extract unique identifier from output filename for localStorage isolation
+    storage_key_suffix = os.path.splitext(os.path.basename(output_html_path))[0]
+    # Sanitize: remove special chars, limit length
+    storage_key_suffix = re.sub(r'[^a-zA-Z0-9_]', '_', storage_key_suffix)[:50]
+
     html_content = f'''
     <!DOCTYPE html>
     <html lang="en">
@@ -278,6 +283,9 @@ def generate_reading_list(input_path_or_df, output_html_path, search_info=None):
 # 添加交互式JavaScript
     html_content += '''
     <script>
+        // Unique storage key suffix to isolate localStorage for different queries
+        const STORAGE_KEY_PREFIX = '{storage_key_suffix}';
+
         // 更新侧边栏的小图标
         function updateSidebarIndicator(articleId) {
             // 从 article-0 提取 0
@@ -285,8 +293,8 @@ def generate_reading_list(input_path_or_df, output_html_path, search_info=None):
             const indicatorContainer = document.getElementById('indicators-' + articleNum);
             if (!indicatorContainer) return;
             
-            const starred = JSON.parse(localStorage.getItem('starred') || '[]');
-            const read = JSON.parse(localStorage.getItem('read') || '[]');
+            const starred = JSON.parse(localStorage.getItem('starred_' + STORAGE_KEY_PREFIX) || '[]');
+            const read = JSON.parse(localStorage.getItem('read_' + STORAGE_KEY_PREFIX) || '[]');
             
             let html = '';
             if (starred.includes(articleId)) {
@@ -328,7 +336,7 @@ def generate_reading_list(input_path_or_df, output_html_path, search_info=None):
             if (!card) return;
             const articleId = card.id;
             
-            let starred = JSON.parse(localStorage.getItem('starred') || '[]');
+            let starred = JSON.parse(localStorage.getItem('starred_' + STORAGE_KEY_PREFIX) || '[]');
             const index = starred.indexOf(articleId);
             
             if (index > -1) {
@@ -341,7 +349,7 @@ def generate_reading_list(input_path_or_df, output_html_path, search_info=None):
                 btn.classList.add('active'); // 修复2：同步添加按钮高亮
             }
             
-            localStorage.setItem('starred', JSON.stringify(starred));
+            localStorage.setItem('starred_' + STORAGE_KEY_PREFIX, JSON.stringify(starred));
             updateSidebarIndicator(articleId); // 更新侧边栏
         }
         
@@ -351,7 +359,7 @@ def generate_reading_list(input_path_or_df, output_html_path, search_info=None):
             if (!card) return;
             const articleId = card.id;
             
-            let read = JSON.parse(localStorage.getItem('read') || '[]');
+            let read = JSON.parse(localStorage.getItem('read_' + STORAGE_KEY_PREFIX) || '[]');
             const index = read.indexOf(articleId);
             
             if (index > -1) {
@@ -364,13 +372,13 @@ def generate_reading_list(input_path_or_df, output_html_path, search_info=None):
                 btn.classList.add('active'); // 修复2
             }
             
-            localStorage.setItem('read', JSON.stringify(read));
+            localStorage.setItem('read_' + STORAGE_KEY_PREFIX, JSON.stringify(read));
             updateSidebarIndicator(articleId); // 更新侧边栏
         }
         
         window.onload = function() {
-            const starred = JSON.parse(localStorage.getItem('starred') || '[]');
-            const read = JSON.parse(localStorage.getItem('read') || '[]');
+            const starred = JSON.parse(localStorage.getItem('starred_' + STORAGE_KEY_PREFIX) || '[]');
+            const read = JSON.parse(localStorage.getItem('read_' + STORAGE_KEY_PREFIX) || '[]');
             
             // 恢复星标状态
             starred.forEach(id => {
