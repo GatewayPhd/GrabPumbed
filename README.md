@@ -221,7 +221,7 @@ If you use this tool in your research, please cite:
   author = {Li, Xiang and GitHub Copilot},
   title = {PubMed Literature Retrieval and Interactive Reading List Generator},
   year = {2025},
-  url = {https://github.com/yourusername/grab-pubmed-info}
+  url = {https://github.com/GatewayPhd/grab-pubmed-info}
 }
 ```
 
@@ -240,10 +240,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - ScienceDirect for impact factor data
 - The Python scientific computing community
 
----
-
-**⭐ Star this repository if you find it helpful!**
-
-*Generated with ❤️ for the research community*
-#   G r a b P u m b e d  
- 
